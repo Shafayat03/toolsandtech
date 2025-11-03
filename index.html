@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SmartShop — Online Product Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="SmartShop - Demo e-commerce single page using HTML, Tailwind CSS and vanilla JS (Fetch API)">
+</head>
+<body class="bg-gray-50 text-gray-800 leading-relaxed">
+
+  <!-- NAVBAR (sticky) -->
+  <header class="sticky top-0 z-50 bg-white/70 backdrop-blur shadow">
+    <div class="container mx-auto flex items-center justify-between p-4">
+      <a href="#home" class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v4H3z"/><path d="M5 11h14v10H5z"/></svg>
+        <span class="font-extrabold text-xl">SmartShop</span>
+      </a>
+
+      <nav class="hidden md:flex gap-6 items-center" id="navlinks">
+        <a href="#home" data-link="home" class="nav-link hover:text-indigo-600">Home</a>
+        <a href="#products" data-link="products" class="nav-link hover:text-indigo-600">Products</a>
+        <a href="#reviews" data-link="reviews" class="nav-link hover:text-indigo-600">Reviews</a>
+        <a href="#contact" data-link="contact" class="nav-link hover:text-indigo-600">Contact</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-3">
+          <div class="text-sm">Balance: <span id="user-balance" class="font-semibold">0 BDT</span></div>
+          <button id="add-money" class="px-3 py-1 bg-indigo-600 text-white rounded shadow-sm text-sm">+ Add Money</button>
+        </div>
+        <button id="cart-btn" class="relative p-2 bg-white border rounded-lg shadow hover:shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4"/></svg>
+          <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+        </button>
+        <button id="mobile-menu-toggle" class="md:hidden p-2">☰</button>
+      </div>
+    </div>
+
+    <!-- mobile nav -->
+    <div id="mobile-nav" class="md:hidden hidden bg-white border-t">
+      <div class="p-4 flex flex-col gap-3">
+        <a href="#home" data-link="home" class="nav-link">Home</a>
+        <a href="#products" data-link="products" class="nav-link">Products</a>
+        <a href="#reviews" data-link="reviews" class="nav-link">Reviews</a>
+        <a href="#contact" data-link="contact" class="nav-link">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="home">
+    <!-- HERO / SLIDING BANNER -->
+    <section class="container mx-auto p-4">
+      <div class="relative overflow-hidden rounded-2xl shadow-lg">
+        <div id="banner" class="h-56 md:h-72 lg:h-96 flex transition-all duration-500">
+          <!-- slides will be injected -->
+        </div>
+        <button id="prev-slide" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow">‹</button>
+        <button id="next-slide" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow">›</button>
+      </div>
+
+      <!-- Search, Sort, Filters -->
+      <div class="mt-4 flex flex-col md:flex-row items-center gap-3">
+        <input id="search-input" type="search" placeholder="Search products or category..." class="flex-1 p-3 rounded-lg border focus:outline-indigo-500" />
+        <select id="sort-select" class="p-3 rounded-lg border">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating-desc">Rating: High to Low</option>
+        </select>
+        <button id="reset-filters" class="p-3 rounded-lg border">Reset</button>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+   <section id="products" class="relative container mx-auto px-6 py-12 mt-10">
+  <!-- Section Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent tracking-wide flex items-center gap-2">
+      🛍️ Featured Products
+    </h2>
+    <button class="hidden sm:flex items-center gap-2 text-sm font-medium text-indigo-700 hover:text-indigo-900 transition">
+      View All <span class="text-lg">→</span>
+    </button>
+  </div>
+
+  <!-- Section Background -->
+  <div class="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 via-white to-indigo-50 opacity-70 rounded-3xl blur-3xl"></div>
+
+  <!-- Products Grid -->
+  <div
+    id="products-grid"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10"
+  >
+    <!-- product cards injected here -->
+  </div>
+</section>
+
+
+    <!-- REVIEWS -->
+    <section id="reviews" class="container mx-auto p-4 mt-8">
+      <h2 class="text-2xl font-bold mb-3">Customer Reviews</h2>
+      <div class="relative overflow-hidden rounded-xl shadow bg-white p-4" id="reviews-carousel">
+        <div id="reviews-track" class="flex transition-transform duration-500">
+          <!-- review slides injected -->
+        </div>
+        <button id="prev-review" class="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-100 p-2 rounded">‹</button>
+        <button id="next-review" class="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-100 p-2 rounded">›</button>
+      </div>
+    </section>
+
+    <!-- About & Bonus Sections -->
+    <section id="about" class="container mx-auto p-4 mt-8 bg-white rounded-xl shadow">
+      <div class="md:flex gap-6 items-center p-4">
+        <div class="flex-1">
+          <h3 class="text-xl font-bold">About SmartShop</h3>
+          <p class="mt-2">SmartShop is a student-built demo e-commerce website demonstrating Fetch API, DOM manipulation, localStorage usage, responsive UI with Tailwind CSS, and interactive features like cart, balance, coupons, reviews and more.</p>
+          <ul class="mt-3 list-disc pl-5 text-sm">
+            <li>Group Members: <span class="font-medium">Your Team Here</span></li>
+            <li>Course: Tools and Technologies For Internet Programming</li>
+            <li>Features: Search, Sorting, Cart, Wishlist, Balance, Add Money, Contact form</li>
+          </ul>
+        </div>
+        <div class="w-full md:w-1/3 mt-4 md:mt-0">
+          <img src="https://images.unsplash.com/photo-1523475496153-3d6cc74b6a0d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="about" class="rounded-lg shadow" />
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT (Bonus) -->
+    <section id="contact" class="container mx-auto p-4 mt-8">
+      <h2 class="text-2xl font-bold mb-3">Contact Us</h2>
+      <form id="contact-form" class="bg-white p-4 rounded-xl shadow grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="contact-name" placeholder="Name" required class="p-3 border rounded" />
+        <input id="contact-email" placeholder="Email" type="email" required class="p-3 border rounded" />
+        <textarea id="contact-msg" placeholder="Message" required class="p-3 border rounded md:col-span-2"></textarea>
+        <button type="submit" class="p-3 bg-indigo-600 text-white rounded md:col-span-2">Send Message</button>
+      </form>
+      <div id="contact-thanks" class="hidden mt-3 p-3 bg-green-50 text-green-700 rounded">Thanks! We received your message.</div>
+    </section>
+
+  </main>
+
+  <!-- CART DRAWER -->
+  <aside id="cart-drawer" class="fixed right-4 bottom-4 w-96 max-w-full bg-white rounded-xl shadow-xl p-4 hidden">
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-lg font-bold">Shopping Cart</h3>
+      <button id="close-cart" class="text-sm text-gray-500">Close</button>
+    </div>
+    <div id="cart-items" class="space-y-3 max-h-56 overflow-auto pb-2"></div>
+    <div class="border-t pt-3 mt-3 space-y-2">
+      <div class="flex justify-between"><span>Subtotal</span><span id="subtotal">0 BDT</span></div>
+      <div class="flex justify-between"><span>Delivery</span><span id="delivery">0 BDT</span></div>
+      <div class="flex justify-between"><span>Shipping</span><span id="shipping">0 BDT</span></div>
+      <div class="flex justify-between"><span>Discount</span><span id="discount">0 BDT</span></div>
+      <div class="flex justify-between font-bold"><span>Total</span><span id="total">0 BDT</span></div>
+      <div class="flex gap-2 mt-2">
+        <input id="coupon-input" placeholder="Coupon code" class="flex-1 p-2 border rounded" />
+        <button id="apply-coupon" class="p-2 bg-indigo-600 text-white rounded">Apply</button>
+      </div>
+      <button id="checkout" class="w-full p-3 bg-green-600 text-white rounded mt-2">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- BACK TO TOP -->
+  <button id="back-top" class="fixed right-4 bottom-24 p-2 bg-indigo-600 text-white rounded-full hidden">↑</button>
+
+  <!-- FOOTER -->
+  <footer class="bg-white mt-12 border-t">
+    <div class="container mx-auto p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-sm">© <span id="year"></span> SmartShop. All rights reserved.</div>
+      <div class="flex gap-4">
+        <a href="#home" class="text-sm">Home</a>
+        <a href="#products" class="text-sm">Products</a>
+        <a href="#contact" class="text-sm">Contact</a>
+      </div>
+      <div class="text-sm">Contact: example@email.com</div>
+    </div>
+  </footer>
+
+  <script>
+  // ------------------ CONFIG & STATE ------------------
+  const API_PRODUCTS = 'https://fakestoreapi.com/products';
+  const DELIVERY_CHARGE = 50; // fixed
+  const SHIPPING_COST = 30; // fixed
+  const START_BALANCE = 1000; // BDT
+
+  let products = [];
+  let cart = JSON.parse(localStorage.getItem('smartshop_cart') || '[]');
+  let balance = Number(localStorage.getItem('smartshop_balance') || START_BALANCE);
+  const REVIEW_DATA = [
+    {name:'Ayesha', comment:'Great service and fast delivery!', rating:5, date:'2025-10-01'},
+    {name:'Rafi', comment:'Product quality was above expectation.', rating:4, date:'2025-09-20'},
+    {name:'Tania', comment:'Very responsive support.', rating:5, date:'2025-08-12'},
+    {name:'Karim', comment:'Affordable prices and good selection.', rating:4, date:'2025-07-21'}
+  ];
+
+  // ------------------ UI HELPERS ------------------
+  function formatBDT(n){ return n.toLocaleString('en-US') + ' BDT'; }
+  function qs(sel){ return document.querySelector(sel); }
+  function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+  // ------------------ INIT ------------------
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // balance display
+  function updateBalanceUI(){ qs('#user-balance').textContent = formatBDT(balance); localStorage.setItem('smartshop_balance', String(balance)); }
+  updateBalanceUI();
+
+  // cart count
+  function updateCartCount(){ qs('#cart-count').textContent = cart.reduce((s,i)=>s+i.qty,0); }
+  updateCartCount();
+
+  // ------------------ BANNER SLIDER ------------------
+const banners = [
+  {img: 'ab.jpg'},
+  {img: 'ip.jpg'},
+  {img: 'download.jpg'}
+];
+
+const bannerEl = document.querySelector('#banner');
+let bannerIndex = 0;
+
+function renderBanners() {
+  bannerEl.innerHTML = '';
+  banners.forEach(b => {
+    const div = document.createElement('div');
+    div.className = `
+      flex-shrink-0 w-full h-full 
+      bg-center bg-no-repeat 
+      bg-gray-200 
+      transition-all duration-700
+    `;
+    // Use 'contain' to show full image without cropping
+    div.style.backgroundImage = `url(${b.img})`;
+    div.style.backgroundSize = 'contain';
+    bannerEl.appendChild(div);
+  });
+  updateBannerPos();
+}
+
+function updateBannerPos() {
+  bannerEl.style.transform = `translateX(-${bannerIndex * 100}%)`;
+  bannerEl.style.transition = 'transform 0.6s ease';
+}
+
+// Next/Prev buttons
+document.getElementById('next-slide').addEventListener('click', () => {
+  bannerIndex = (bannerIndex + 1) % banners.length;
+  updateBannerPos();
+});
+
+document.getElementById('prev-slide').addEventListener('click', () => {
+  bannerIndex = (bannerIndex - 1 + banners.length) % banners.length;
+  updateBannerPos();
+});
+
+// Auto-slide
+let bannerTimer = setInterval(() => {
+  bannerIndex = (bannerIndex + 1) % banners.length;
+  updateBannerPos();
+}, 4000);
+
+// Pause when hovering
+bannerEl.addEventListener('mouseenter', () => clearInterval(bannerTimer));
+bannerEl.addEventListener('mouseleave', () => {
+  bannerTimer = setInterval(() => {
+    bannerIndex = (bannerIndex + 1) % banners.length;
+    updateBannerPos();
+  }, 4000);
+});
+
+renderBanners();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ------------------ FETCH PRODUCTS ------------------
+// ------------------ FETCH PRODUCTS ------------------
+async function loadProducts() {
+  try {
+    const res = await fetch(API_PRODUCTS);
+    products = await res.json();
+    renderProducts(products);
+  } catch (e) {
+    console.error("Failed fetching products", e);
+    products = [];
+    qs("#products-grid").innerHTML =
+      '<div class="p-6 text-red-600 text-center text-lg font-medium">⚠️ Failed to load products. Please try again later.</div>';
+  }
+}
+
+// ------------------ RENDER PRODUCTS ------------------
+function renderProducts(list) {
+  const grid = qs("#products-grid");
+  grid.innerHTML = "";
+
+  list.forEach((p) => {
+    const card = document.createElement("div");
+    card.className = `
+      group relative bg-white rounded-2xl shadow-md hover:shadow-2xl hover:-translate-y-1 
+      transition-all duration-300 flex flex-col overflow-hidden
+    `;
+
+    card.innerHTML = `
+      <!-- Product Image -->
+      <div class="relative bg-gradient-to-br from-gray-100 via-gray-50 to-white flex items-center justify-center h-56">
+        <img src="${p.image}" alt="${p.title}" 
+             class="h-40 object-contain transition-transform duration-300 group-hover:scale-105" />
+        <button 
+          class="wishlist absolute top-3 right-3 bg-white/90 backdrop-blur-md p-2 rounded-full 
+                 text-gray-600 hover:text-pink-500 hover:scale-110 transition" 
+          data-id="${p.id}">
+          ♡
+        </button>
+      </div>
+
+      <!-- Product Details -->
+      <div class="flex flex-col flex-1 p-4">
+        <h3 class="font-semibold text-gray-800 text-sm line-clamp-2">${p.title}</h3>
+
+        <div class="mt-2 flex items-center justify-between">
+          <div class="text-indigo-600 font-bold text-lg">${formatBDT(Math.round(p.price))}</div>
+          <div class="text-xs text-yellow-500 flex items-center gap-1">
+            ⭐ <span class="text-gray-700">${p.rating?.rate || 0}</span>
+          </div>
+        </div>
+
+        <!-- Add to Cart -->
+        <button 
+          class="add-to-cart mt-4 w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-2.5 rounded-xl font-medium 
+                 hover:from-indigo-700 hover:to-blue-700 active:scale-95 transition-all duration-200"
+          data-id="${p.id}">
+          🛒 Add to Cart
+        </button>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  // ------------------ EVENT HANDLERS ------------------
+  qsa(".add-to-cart").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      addToCart(Number(btn.dataset.id));
+      btn.innerText = "✅ Added!";
+      btn.classList.add("from-green-500", "to-emerald-500");
+      setTimeout(() => {
+        btn.innerText = "🛒 Add to Cart";
+        btn.classList.remove("from-green-500", "to-emerald-500");
+      }, 1500);
+    })
+  );
+
+  qsa(".wishlist").forEach((btn) =>
+    btn.addEventListener("click", () => {
+      toggleWishlist(Number(btn.dataset.id), btn);
+      if (btn.textContent === "♡") {
+        btn.textContent = "♥";
+        btn.classList.add("text-pink-500", "scale-110");
+      } else {
+        btn.textContent = "♡";
+        btn.classList.remove("text-pink-500", "scale-110");
+      }
+    })
+  );
+}
+
+//change the UI and make it  more professional and unique 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // ------------------ CART LOGIC ------------------
+  function saveCart(){ localStorage.setItem('smartshop_cart', JSON.stringify(cart)); updateCartCount(); }
+
+  function addToCart(id){
+    const prod = products.find(p=>p.id===id); if(!prod) return;
+    const existing = cart.find(c=>c.id===id);
+    const newSubtotal = cart.reduce((s,i)=>s + i.qty * i.price,0) + (existing?0:prod.price);
+    // check balance
+    if(newSubtotal + DELIVERY_CHARGE + SHIPPING_COST > balance){ alert('Cannot add: total would exceed your available balance. Add money or remove items.'); return; }
+    if(existing){ existing.qty++; }
+    else{ cart.push({id:prod.id, title:prod.title, price:Math.round(prod.price), img:prod.image, qty:1}); }
+    saveCart(); renderCart();
+  }
+
+  function removeFromCart(id){ cart = cart.filter(c=>c.id!==id); saveCart(); renderCart(); }
+  function changeQty(id, delta){ const it = cart.find(i=>i.id===id); if(!it) return; it.qty = Math.max(1, it.qty + delta); saveCart(); renderCart(); }
+
+  function calcTotals(){ const subtotal = cart.reduce((s,i)=>s + i.qty * i.price,0); const delivery = cart.length ? DELIVERY_CHARGE : 0; const shipping = cart.length ? SHIPPING_COST : 0; const discount = Number(qs('#apply-coupon')?.dataset?.applied === 'true' ? Math.round(subtotal * 0.10) : 0); const total = subtotal + delivery + shipping - discount; return {subtotal,delivery,shipping,discount,total}; }
+
+  function renderCart(){ const el = qs('#cart-items'); el.innerHTML = '';
+    cart.forEach(item=>{
+      const div = document.createElement('div'); div.className='flex gap-3 items-center';
+      div.innerHTML = `
+        <img src="${item.img}" class="w-14 h-14 object-contain rounded" />
+        <div class="flex-1">
+          <div class="font-medium text-sm">${item.title}</div>
+          <div class="text-xs">${formatBDT(item.price)} x ${item.qty}</div>
+          <div class="mt-2 flex gap-2 text-sm">
+            <button class="px-2 py-1 border rounded dec" data-id="${item.id}">-</button>
+            <button class="px-2 py-1 border rounded inc" data-id="${item.id}">+</button>
+            <button class="px-2 py-1 border rounded remove" data-id="${item.id}">Remove</button>
+          </div>
+        </div>
+      `;
+      el.appendChild(div);
+    });
+
+    qsa('.inc').forEach(b=> b.addEventListener('click', ()=> changeQty(Number(b.dataset.id), 1)));
+    qsa('.dec').forEach(b=> b.addEventListener('click', ()=> changeQty(Number(b.dataset.id), -1)));
+    qsa('.remove').forEach(b=> b.addEventListener('click', ()=> removeFromCart(Number(b.dataset.id))));
+
+    const t = calcTotals(); qs('#subtotal').textContent = formatBDT(t.subtotal); qs('#delivery').textContent = formatBDT(t.delivery); qs('#shipping').textContent = formatBDT(t.shipping); qs('#discount').textContent = formatBDT(t.discount); qs('#total').textContent = formatBDT(t.total);
+    updateCartCount();
+  }
+  renderCart();
+
+  // CART drawer controls
+  qs('#cart-btn').addEventListener('click', ()=>{ qs('#cart-drawer').classList.toggle('hidden'); renderCart(); });
+  qs('#close-cart').addEventListener('click', ()=> qs('#cart-drawer').classList.add('hidden'));
+
+  // COUPON
+  qs('#apply-coupon').addEventListener('click', ()=>{
+    const code = qs('#coupon-input').value.trim().toUpperCase(); if(!code) return alert('Enter coupon');
+    if(code === 'SMART10'){
+      qs('#apply-coupon').dataset.applied = 'true'; alert('Coupon applied: 10% off'); renderCart();
+    }else{ alert('Invalid coupon'); }
+  });
+
+  // CHECKOUT
+  qs('#checkout').addEventListener('click', ()=>{
+    const t = calcTotals(); if(t.total === 0) return alert('Cart empty');
+    if(t.total > balance) return alert('Insufficient balance. Add money first.');
+    // process
+    balance -= t.total; cart = []; saveCart(); updateBalanceUI(); renderCart(); alert('Purchase successful!'); qs('#cart-drawer').classList.add('hidden');
+  });
+
+  // ADD MONEY
+  qs('#add-money').addEventListener('click', ()=>{ balance += START_BALANCE; updateBalanceUI(); alert('Added: ' + formatBDT(START_BALANCE)); });
+
+  // SEARCH & SORT
+  qs('#search-input').addEventListener('input', ()=> applyFilters());
+  qs('#sort-select').addEventListener('change', ()=> applyFilters());
+  qs('#reset-filters').addEventListener('click', ()=>{ qs('#search-input').value=''; qs('#sort-select').value='default'; applyFilters(); });
+
+  function applyFilters(){ const q = qs('#search-input').value.trim().toLowerCase(); let list = products.slice(); if(q) list = list.filter(p=> p.title.toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q)); const sort = qs('#sort-select').value; if(sort==='price-asc') list.sort((a,b)=> a.price - b.price); if(sort==='price-desc') list.sort((a,b)=> b.price - a.price); if(sort==='rating-desc') list.sort((a,b)=> (b.rating?.rate||0) - (a.rating?.rate||0)); renderProducts(list); }
+
+  // Wishlist (simple, localStorage)
+  function toggleWishlist(id, btn){ const key='smartshop_wl'; const wl = JSON.parse(localStorage.getItem(key)||'[]'); const present = wl.includes(id); if(present){ const idx = wl.indexOf(id); wl.splice(idx,1); btn.classList.remove('text-red-500'); } else { wl.push(id); btn.classList.add('text-red-500'); } localStorage.setItem(key, JSON.stringify(wl)); alert(present? 'Removed from wishlist' : 'Added to wishlist'); }
+
+  // REVIEWS CAROUSEL
+  const reviewsTrack = qs('#reviews-track'); let revIdx=0; function renderReviews(){ reviewsTrack.innerHTML=''; REVIEW_DATA.forEach(r=>{
+    const s = document.createElement('div'); s.className='w-full p-4'; s.innerHTML = `<div class="p-3 bg-indigo-50 rounded"> <div class="flex justify-between items-start"><div><div class="font-semibold">${r.name}</div><div class="text-xs">${r.date}</div></div><div class="text-yellow-600 font-bold">${'★'.repeat(r.rating)}</div></div><p class="mt-2 text-sm">${r.comment}</p></div>`; reviewsTrack.appendChild(s);
+  }); updateReviewsPos(); }
+  function updateReviewsPos(){ reviewsTrack.style.transform = `translateX(-${revIdx * 100}%)`; }
+  qs('#next-review').addEventListener('click', ()=>{ revIdx=(revIdx+1)%REVIEW_DATA.length; updateReviewsPos(); });
+  qs('#prev-review').addEventListener('click', ()=>{ revIdx=(revIdx-1+REVIEW_DATA.length)%REVIEW_DATA.length; updateReviewsPos(); });
+  setInterval(()=>{ revIdx=(revIdx+1)%REVIEW_DATA.length; updateReviewsPos(); },5000);
+  renderReviews();
+
+  // CONTACT FORM validation
+  qs('#contact-form').addEventListener('submit', (e)=>{ e.preventDefault(); const name = qs('#contact-name').value.trim(); const email = qs('#contact-email').value.trim(); const msg = qs('#contact-msg').value.trim(); if(!name||!email||!msg) return alert('Please complete form'); qs('#contact-thanks').classList.remove('hidden'); qs('#contact-form').reset(); setTimeout(()=>qs('#contact-thanks').classList.add('hidden'),4000); });
+
+  // NAV active highlight + mobile toggle
+  function setActive(link){ qsa('.nav-link').forEach(a=> a.classList.remove('text-indigo-600','font-bold')); const el = qsa(`.nav-link[data-link="${link}"]`)[0]; if(el) el.classList.add('text-indigo-600','font-bold'); }
+  qsa('.nav-link').forEach(a=> a.addEventListener('click', ()=>{ setActive(a.dataset.link); qs('#mobile-nav').classList.add('hidden'); }));
+  qs('#mobile-menu-toggle').addEventListener('click', ()=> qs('#mobile-nav').classList.toggle('hidden'));
+
+  // Back to top
+  const backBtn = qs('#back-top'); window.addEventListener('scroll', ()=>{ if(window.scrollY > 300) backBtn.classList.remove('hidden'); else backBtn.classList.add('hidden'); }); backBtn.addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
+
+  // Smooth highlight on navigation by scroll
+  const sections = ['home','products','reviews','contact']; window.addEventListener('scroll', ()=>{
+    let found = 'home';
+    for(const s of sections){ const el = document.getElementById(s); if(el && window.scrollY >= el.offsetTop - 120) found = s; }
+    setActive(found);
+  });
+
+  // MOBILE: close cart when clicking outside
+  document.addEventListener('click', (e)=>{ if(!qs('#cart-drawer').classList.contains('hidden')){ if(!qs('#cart-drawer').contains(e.target) && !qs('#cart-btn').contains(e.target)){ qs('#cart-drawer').classList.add('hidden'); } } });
+
+  // initial load
+  loadProducts();
+
+  // keep cart, balance persisted across reloads
+  window.addEventListener('load', ()=>{ updateBalanceUI(); renderCart(); });
+  </script>
+</body>
+</html>
